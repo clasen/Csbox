@@ -1,0 +1,22 @@
+{
+  "name": "cryptop",
+  "version": "1.0.0",
+  "description": "Modern terminal password manager",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "cryptop": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "crypto-js": "^4.2.0",
+    "csv-parse": "^5.5.3",
+    "deepbase": "^1.0.0" 
+  }
+}
