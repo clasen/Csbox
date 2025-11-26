@@ -4,7 +4,11 @@
 
 ## Why Cryptop?
 
-Dropbox discontinued its password management service, leaving many users with exported CSV files that need a safe home. Cryptop allows you to:
+Dropbox discontinued its password management service, leaving many users with exported CSV files containing all their passwords in **plain text**. This is a serious security risk - anyone who gains access to your computer or backups could read all your passwords without any barrier.
+
+**Keeping an unencrypted CSV file with your passwords is extremely dangerous.** That's why I created Cryptop: to provide a simple way to encrypt and manage those exported passwords locally.
+
+Cryptop allows you to:
 
 - ✅ **Easily import** your exported Dropbox passwords (CSV format)
 - ✅ **Strong encryption** using AES-256 to protect your data
@@ -17,7 +21,6 @@ Dropbox discontinued its password management service, leaving many users with ex
 - 🔍 **Fast search** with real-time filtering
 - 📝 **Full editor** to create, edit and organize your passwords
 - 🎨 **Modern interface** with dark theme and custom colors
-- 🔐 **OTP support** (One-Time Password secrets)
 - ⌨️ **Keyboard shortcuts** for efficient navigation
 - 💾 **Automatic encrypted saving**
 
@@ -93,6 +96,16 @@ Enter your master password to unlock the encrypted database.
 3. The database is stored in your home directory at `~/.cryptop/db.json`
 4. Use a **strong password** as your master password
 
+### 🛡️ Security Disclaimer
+
+This tool was created with the best intentions to help users protect their exported passwords. However, **I am not a security expert**. While I've implemented industry-standard AES-256 encryption and followed security best practices to the best of my knowledge, I cannot guarantee that this software is free from vulnerabilities.
+
+**Use at your own risk.** I am not responsible for any data loss, security breaches, or other issues that may arise from using this software. If you have extremely sensitive data or require enterprise-level security guarantees, please consider using professionally audited password management solutions.
+
+That said, using Cryptop is **significantly safer than keeping your passwords in a plain text CSV file**.
+
+**Note**: This project is not affiliated with Dropbox Inc. It is an independent tool created to help users manage their passwords locally after the discontinuation of the Dropbox Passwords service.
+
 ## File Structure
 
 ### Project Files
@@ -138,15 +151,19 @@ Enter your master password to unlock the encrypted database.
 - `csv-parse` - CSV file parser
 - `deepbase` - Simple file-based database
 
-## License
+## 🤝 Contributing
 
-ISC
+Contributions are welcome! If you find any issues or have suggestions for improvement, please open an issue or submit a pull request on the [GitHub repository](https://github.com/clasen/Cryptop).
 
-## Contributing
+## 📄 License
 
-Contributions are welcome. Please open an issue or pull request.
+The MIT License (MIT)
 
----
+Copyright (c) Martin Clasen
 
-**Note**: This project is not affiliated with Dropbox Inc. It is an independent tool created to help users manage their passwords locally after the discontinuation of the Dropbox Passwords service.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
