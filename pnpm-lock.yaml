@@ -1,0 +1,71 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      blessed:
+        specifier: 0.1.81
+        version: 0.1.81
+      crypto-js:
+        specifier: 4.2.0
+        version: 4.2.0
+      csv-parse:
+        specifier: 7.0.2
+        version: 7.0.2
+      deepbase:
+        specifier: 2.0.4
+        version: 2.0.4
+
+packages:
+
+  blessed@0.1.81:
+    resolution: {integrity: sha512-LoF5gae+hlmfORcG1M5+5XZi4LBmvlXTzwJWzUlPryN/SJdSflZvROM2TwkT0GMpq7oqT48NRd4GS7BiVBc5OQ==}
+    engines: {node: '>= 0.8.0'}
+    hasBin: true
+
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
+
+  csv-parse@7.0.2:
+    resolution: {integrity: sha512-uKZghv9UmPkMVLYy//KZ9HFAIJsl7wkhoEdIL0+rhuSY9pZQlhaeGEDPIe+/w7eh81MOql8Q/9+inAGWG6ZHYA==}
+
+  deepbase@2.0.4:
+    resolution: {integrity: sha512-zeHRWA52lXNaHIr1lmoFOItSASM2vfaT+T/QjBV3rOa9dlkp+Qzzapn7qRUEd4YUptIqDcQAjFl3lRJu3aOdHQ==}
+
+  graceful-fs@4.2.11:
+    resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  nanoid@5.1.16:
+    resolution: {integrity: sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
+  steno@0.4.4:
+    resolution: {integrity: sha512-EEHMVYHNXFHfGtgjNITnka0aHhiAlo93F7z2/Pwd+g0teG9CnM3JIINM7hVVB5/rhw9voufD7Wukwgtw2uqh6w==}
+
+snapshots:
+
+  blessed@0.1.81: {}
+
+  crypto-js@4.2.0: {}
+
+  csv-parse@7.0.2: {}
+
+  deepbase@2.0.4:
+    dependencies:
+      nanoid: 5.1.16
+      steno: 0.4.4
+
+  graceful-fs@4.2.11: {}
+
+  nanoid@5.1.16: {}
+
+  steno@0.4.4:
+    dependencies:
+      graceful-fs: 4.2.11

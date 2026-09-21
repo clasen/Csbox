@@ -1,6 +1,6 @@
 {
   "name": "csbox",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "🔑 Csbox - Vanguard terminal password manager",
   "author": "Martin Clasen",
   "license": "MIT",
@@ -32,7 +32,8 @@
   "dependencies": {
     "blessed": "0.1.81",
     "crypto-js": "4.2.0",
-    "csv-parse": "5.5.3",
+    "csv-parse": "7.0.2",
     "deepbase": "2.0.4"
-  }
+  },
+  "packageManager": "pnpm@11.3.0"
 }
