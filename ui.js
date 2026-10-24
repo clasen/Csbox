@@ -144,7 +144,6 @@ export class AppUI {
         left: 0,
         width: '40%',
         height: 3, 
-        inputOnFocus: true,
         keys: true,
         mouse: true,
         border: { type: 'line' },
@@ -211,7 +210,6 @@ export class AppUI {
             left: 2,
             right: 2,
             height: field === 'Notes' ? 5 : 3,
-            inputOnFocus: true,
             keys: true,
             mouse: true,
             border: { type: 'line' },
@@ -465,14 +463,19 @@ export class AppUI {
           }
       });
 
-      this.searchInput.on('submit', async () => {
+      this.searchInput.on('enter', async () => {
           this.state.query = this.searchInput.getValue();
           await this.refreshData();
           this.updateList();
           this.list.focus();
       });
 
-      this.searchInput.on('cancel', async () => {
+      this.searchInput.key(['tab'], () => {
+          this.list.focus();
+          return false;
+      });
+
+      this.searchInput.on('escape', async () => {
           this.searchInput.setValue('');
           this.state.query = '';
           await this.refreshData();
@@ -594,7 +597,7 @@ export class AppUI {
       orderedInputs.forEach((input, idx) => {
           // Cuando se envía el input (Enter), ir al siguiente
           if (input.name !== 'notes') {
-            input.on('submit', () => {
+            input.on('enter', () => {
                 if (idx === orderedInputs.length - 1) {
                     this.focusElement(this.saveBtn);
                 } else {
@@ -604,7 +607,7 @@ export class AppUI {
           }
 
           // Cuando se cancela (Escape), volver a la lista
-          input.on('cancel', () => {
+          input.on('escape', () => {
               this.list.focus();
           });
           
@@ -619,24 +622,18 @@ export class AppUI {
           }
 
           input.key(['tab'], () => {
-              // Salir del modo input antes de cambiar foco
-              input.cancel();
               moveFocus(input, 1);
               return false;
           });
           input.key(['S-tab'], () => {
-              // Salir del modo input antes de cambiar foco
-              input.cancel();
               moveFocus(input, -1);
               return false;
           });
-          
+
           input.key(['down'], () => {
               // Si estamos en notes y editando, no cambiar foco
               if (input.name === 'notes' && input._isEditing) return;
 
-              // Salir del modo input antes de cambiar foco
-              input.cancel();
               if (idx === orderedInputs.length - 1) {
                   this.focusElement(this.saveBtn);
               } else {
@@ -648,8 +645,6 @@ export class AppUI {
               // Si estamos en notes y editando, no cambiar foco
               if (input.name === 'notes' && input._isEditing) return;
 
-              // Salir del modo input antes de cambiar foco
-              input.cancel();
               if (idx === 0) {
                   this.focusElement(this.list);
               } else {
@@ -765,7 +760,9 @@ export class AppUI {
 
       await this.db.set("accounts", id, data);
 
-      this.state.query = ''; 
+      this.state.selectedId = id;
+      this.state.query = '';
+      this.searchInput.setValue('');
       await this.refreshData();
       this.updateList();
       this.list.focus();
@@ -795,14 +792,22 @@ export class AppUI {
 
   _enableCursorNavigation(input) {
       input._cursorOffset = 0;
-      const originalListener = input._listener;
-      
-      // Override listener to handle cursor movement and editing at cursor position
+
+      // Read input on focus without blessed's inputOnFocus: its rewindFocus()
+      // on blur re-focuses the previous input and recurses until the stack overflows.
+      // On blur, blessed's readInput cleanup releases grabKeys by itself.
+      input.on('focus', () => {
+          input._cursorOffset = 0;
+          input.readInput();
+      });
+
+      // Override listener to handle cursor movement and editing at cursor position.
+      // Enter and Escape are reported as 'enter'/'escape' events; blessed's own
+      // 'submit'/'cancel' are not used because 'cancel' also fires on every blur.
       input._listener = (ch, key) => {
-          // Special keys that should bubble or be handled by default
-          if (['tab'].includes(key.name)) {
-              return originalListener ? originalListener.call(input, ch, key) : undefined;
-          }
+          // Tab is handled by the element key bindings.
+          // blessed emits 'enter' and then 'return' for the same \r; only 'enter' is handled.
+          if (key.name === 'tab' || key.name === 'return') return;
 
           if (input.name === 'notes') {
               // Navigation Mode (Not editing)
@@ -816,12 +821,11 @@ export class AppUI {
                        return;
                    }
                    
-                   // Pass navigation keys to be handled by setupEvents (bubbling logic)
-                   if (['up', 'down', 'escape'].includes(key.name)) {
-                       return originalListener ? originalListener.call(input, ch, key) : undefined;
+                   if (key.name === 'escape') {
+                       input.emit('escape');
                    }
-                   
-                   // Block typing in navigation mode
+
+                   // Up/down are handled by the element key bindings; block typing in navigation mode
                    return;
               }
 
@@ -891,9 +895,9 @@ export class AppUI {
               }
           }
 
-          // Allow up/down to bubble for non-notes (navigation)
+          // Up/down on non-notes are handled by the element key bindings
           if (input.name !== 'notes' && ['up', 'down'].includes(key.name)) {
-             return originalListener ? originalListener.call(input, ch, key) : undefined;
+             return;
           }
 
           if (key.name === 'enter') {
@@ -926,12 +930,14 @@ export class AppUI {
                    return;
                }
                input._cursorOffset = 0;
-               return originalListener.call(input, ch, key);
+               input.emit('enter');
+               return;
           }
-          
+
           if (key.name === 'escape') {
                input._cursorOffset = 0;
-               return originalListener.call(input, ch, key);
+               input.emit('escape');
+               return;
           }
 
           let handled = false;
@@ -1031,6 +1037,7 @@ export class AppUI {
 
       // Refresh list
       this.state.query = '';
+      this.searchInput.setValue('');
       await this.refreshData();
       this.updateList();
       this.list.focus();

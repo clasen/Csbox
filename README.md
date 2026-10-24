@@ -16,6 +16,8 @@ Csbox allows you to:
 - ✅ **Completely offline** - your passwords stay on your machine
 - ✅ **Local encrypted database** secured with your master password
 
+![Csbox Interface](screenshot.jpg)
+
 ## Features
 
 - 🔍 **Fast search** with real-time filtering
