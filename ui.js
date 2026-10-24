@@ -904,29 +904,8 @@ export class AppUI {
                if (input.name === 'notes') {
                    // Must be editing mode to reach here
                    const pos = input.value.length - input._cursorOffset;
-                   
-                   // Calculate which line the cursor is on before modification
-                   const textBefore = input.value.substring(0, pos);
-                   const cursorLine = textBefore.split('\n').length - 1;
-                   
-                   // Save scroll
-                   const savedScroll = input.childBase || 0;
-                   
-                   // Insert newline
                    input.value = input.value.slice(0, pos) + '\n' + input.value.slice(pos);
-                   
-                   // Override setValue to prevent scroll reset
-                   // Blessed textarea sets childBase in render based on cursor position
-                   // We need to intercept this. Let's use setImmediate to restore after render cycle.
-                   
                    input.screen.render();
-                   
-                   // Force restore scroll after render
-                   setImmediate(() => {
-                       input.childBase = savedScroll;
-                       input.screen.render();
-                   });
-                   
                    return;
                }
                input._cursorOffset = 0;
@@ -978,19 +957,35 @@ export class AppUI {
           }
 
           if (handled) {
-              if (input.name === 'notes') {
-                  // Save scroll position before render
-                  const savedScroll = input.childBase || 0;
-                  input.screen.render();
-                  // Restore scroll after render cycle
-                  setImmediate(() => {
-                      input.childBase = savedScroll;
-                      input.screen.render();
-                  });
-              } else {
-                  input.screen.render();
-              }
+              input.screen.render();
           }
+      };
+
+      // Replace blessed's _typeScroll (always scrolls to the last line) so the
+      // view follows the cursor. Unfocused inputs keep their scroll (e.g. notes
+      // reset to the top by loadDetails).
+      input._typeScroll = function() {
+         if (this.screen.focused !== this) return;
+
+         var visible = this.height - this.iheight;
+         var cursorIndex = this.value.length - (this._cursorOffset || 0);
+         var cursorLine = this.value.substring(0, cursorIndex).split('\n').length - 1;
+         var base = this.childBase || 0;
+
+         if (cursorLine < base) base = cursorLine;
+         if (cursorLine >= base + visible) base = cursorLine - visible + 1;
+         this.childBase = base;
+
+         // Children of a scrollable element move with childBase; keep the label
+         // on the border the same way blessed does on its 'scroll' event.
+         if (this._label) this._label.rtop = base - this.itop;
+      };
+
+      // blessed only calls _typeScroll when the value changes; cursor moves need it too
+      input.render = function() {
+         this.setValue();
+         this._typeScroll();
+         return this._render();
       };
 
       // Override _updateCursor to render cursor at correct position
@@ -1009,13 +1004,13 @@ export class AppUI {
          var lineY = lines.length - 1;
          var lineX = lines[lines.length - 1].length;
          
-         var cy = lpos.yi + this.itop + lineY;
+         var cy = lpos.yi + this.itop + lineY - (this.childBase || 0);
          // Simple width calc - assumes no horizontal scrolling
          var cx = lpos.xi + this.ileft + lineX; // this.strWidth(lines[lineY])?
          
          // Simple bounds check
-         if (cx > lpos.xl - this.iright) cx = lpos.xl - this.iright;
-         if (cy > lpos.yl - this.ibottom) cy = lpos.yl - this.ibottom;
+         if (cx > lpos.xl - this.iright - 1) cx = lpos.xl - this.iright - 1;
+         if (cy > lpos.yl - this.ibottom - 1) cy = lpos.yl - this.ibottom - 1;
 
          if (cy === program.y && cx === program.x) return;
          program.cup(cy, cx);
